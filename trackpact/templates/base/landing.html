@@ -1,0 +1,1048 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrackPact — Stop missing workouts. Stay accountable.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ══════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --maroon:      #6b1a3a;
+      --maroon-dark: #55132e;
+      --maroon-lt:   #f5dde8;
+      --cream:       #fdf0e8;
+      --cream-dark:  #f8e8da;
+      --white:       #ffffff;
+      --text:        #1a1a1a;
+      --muted:       #666666;
+      --border:      #e8d8ce;
+      --card-bg:     #fdf5f0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--white);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ══════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════ */
+    .navbar {
+      background: var(--cream);
+      height: 58px;
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      border-bottom: 1px solid rgba(107,26,58,0.08);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-right: auto;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--maroon);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: color .15s, background .15s;
+    }
+
+    .nav-links a:hover { color: var(--text); background: rgba(107,26,58,0.07); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .btn-signin {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      padding: 7px 16px;
+      border-radius: 8px;
+      transition: background .15s;
+    }
+
+    .btn-signin:hover { background: rgba(107,26,58,0.07); }
+
+    .btn-getstarted {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--maroon);
+      padding: 8px 20px;
+      border-radius: 9px;
+      transition: background .15s;
+    }
+
+    .btn-getstarted:hover { background: var(--maroon-dark); }
+
+    /* ══════════════════════════════════════
+       SECTION 1 — HERO (LIFTIV style)
+    ══════════════════════════════════════ */
+    .hero-section {
+      position: relative;
+      min-height: 92vh;
+      background-image: url('{% static "images/trackpact_hero.jpg" %}');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* Dark gradient overlay — stronger on left for text, fades right */
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(10, 5, 5, 0.80) 0%,
+        rgba(10, 5, 5, 0.55) 50%,
+        rgba(10, 5, 5, 0.20) 100%
+      );
+      z-index: 0;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 48px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: flex-end;
+      gap: 60px;
+    }
+
+    /* Left copy sits in the middle vertically */
+    .hero-copy {
+      color: #fff;
+      padding-bottom: 80px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 24px;
+      backdrop-filter: blur(6px);
+    }
+
+    .hero-badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ff4d4d;
+      flex-shrink: 0;
+    }
+
+    .hero-headline {
+      font-size: 64px;
+      font-weight: 900;
+      line-height: 1.0;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+      margin-bottom: 0;
+    }
+
+    .hero-headline .accent {
+      color: var(--maroon-lt);
+      display: block;
+      font-size: 52px;
+      text-transform: none;
+      letter-spacing: -0.5px;
+      font-weight: 800;
+    }
+
+    .hero-sub {
+      font-size: 15.5px;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.65;
+      margin: 22px 0 34px;
+      max-width: 400px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--maroon);
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 600;
+      padding: 13px 28px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .btn-primary:hover { background: var(--maroon-dark); color: #fff; }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 600;
+      padding: 13px 28px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.30);
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: background .15s;
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.20); }
+
+    .hero-trust {
+      display: flex;
+      gap: 20px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.60);
+    }
+
+    .hero-trust span { display: flex; align-items: center; gap: 5px; }
+    .hero-trust .check { color: #6ddb8a; font-size: 13px; }
+
+    /* Right — Phone mockup pinned to bottom right */
+    .hero-mockup-wrap {
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+      align-self: flex-end;
+    }
+
+    .hero-mockup-wrap img {
+      width: 100%;
+      max-width: 320px;
+      display: block;
+      filter: drop-shadow(0 24px 60px rgba(0,0,0,0.55));
+    }
+
+    /* ══════════════════════════════════════
+       SECTION 2 — FEATURES
+    ══════════════════════════════════════ */
+    .section-features {
+      background: var(--white);
+      padding: 80px 40px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .section-header h2 {
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .section-header p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 28px 26px 30px;
+      border: 1px solid rgba(107,26,58,0.06);
+    }
+
+    .feature-icon {
+      width: 46px;
+      height: 46px;
+      background: var(--maroon-lt);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: var(--maroon);
+    }
+
+    .feature-card h3 {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ══════════════════════════════════════
+       SECTION 3 — HOW IT WORKS
+    ══════════════════════════════════════ */
+    .section-how {
+      background: var(--cream);
+      padding: 80px 40px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Connector lines between steps */
+    .steps-grid::before,
+    .steps-grid::after {
+      content: '';
+      position: absolute;
+      top: 46px;
+      height: 1px;
+      background: var(--border);
+      z-index: 0;
+    }
+
+    .steps-grid::before { left: calc(33.33% - 40px); width: 80px; }
+    .steps-grid::after  { left: calc(66.66% - 40px); width: 80px; }
+
+    .step-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 32px 24px 28px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-number {
+      width: 46px;
+      height: 46px;
+      background: var(--maroon);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 auto 20px;
+    }
+
+    .step-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .step-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ══════════════════════════════════════
+       SECTION 4 — STATS BAR
+    ══════════════════════════════════════ */
+    .section-stats {
+      background: var(--white);
+      padding: 52px 40px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--maroon);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* ══════════════════════════════════════
+       SECTION 5 — TESTIMONIALS
+    ══════════════════════════════════════ */
+    .section-testimonials {
+      background: var(--cream);
+      padding: 80px 40px;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 28px 26px 26px;
+    }
+
+    .stars {
+      color: var(--maroon);
+      font-size: 16px;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+
+    .testimonial-quote {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #c09090;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .author-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .author-role { font-size: 12.5px; color: var(--muted); }
+
+    /* ══════════════════════════════════════
+       SECTION 6 — CTA BANNER
+    ══════════════════════════════════════ */
+    .section-cta {
+      background: var(--cream);
+      padding: 60px 40px 80px;
+    }
+
+    .cta-box {
+      background: var(--maroon);
+      border-radius: 20px;
+      padding: 56px 40px;
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .cta-box h2 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .cta-box p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.80);
+      line-height: 1.65;
+      margin-bottom: 32px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-btns {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-cta-white {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--white);
+      color: var(--maroon);
+      font-size: 14.5px;
+      font-weight: 700;
+      padding: 12px 26px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .btn-cta-white:hover { background: #f5f5f5; }
+
+    .btn-cta-outline {
+      display: inline-flex;
+      align-items: center;
+      background: transparent;
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 600;
+      padding: 12px 26px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.45);
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+
+    .btn-cta-outline:hover { border-color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.07); }
+
+    .cta-fine {
+      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    /* ══════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════ */
+    footer {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      padding: 48px 40px 28px;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1fr;
+      gap: 40px;
+      max-width: 1100px;
+      margin: 0 auto 36px;
+    }
+
+    .footer-brand-col .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .footer-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--maroon);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .footer-logo-name { font-size: 16px; font-weight: 700; color: var(--text); }
+
+    .footer-tagline {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 20px;
+      max-width: 280px;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 10px;
+    }
+
+    .social-btn {
+      width: 36px;
+      height: 36px;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--muted);
+      transition: border-color .15s, color .15s;
+    }
+
+    .social-btn:hover { border-color: var(--maroon); color: var(--maroon); }
+
+    .footer-col h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .footer-col ul { list-style: none; }
+
+    .footer-col ul li { margin-bottom: 9px; }
+
+    .footer-col ul li a {
+      font-size: 13.5px;
+      color: var(--muted);
+      transition: color .15s;
+    }
+
+    .footer-col ul li a:hover { color: var(--maroon); }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-copy { font-size: 13px; color: var(--muted); }
+
+    .footer-legal {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-legal a {
+      font-size: 13px;
+      color: var(--muted);
+      transition: color .15s;
+    }
+
+    .footer-legal a:hover { color: var(--maroon); }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .hero            { grid-template-columns: 1fr; padding: 60px 28px 0; gap: 40px; }
+      .hero-copy       { padding-bottom: 40px; }
+      .hero-mockup-wrap { justify-content: center; align-items: flex-end; }
+      .hero-mockup-wrap img { max-width: 240px; }
+      .hero-headline   { font-size: 44px; }
+      .hero-headline .accent { font-size: 36px; }
+      .hero-section    { min-height: auto; }
+      .features-grid, .testimonials-grid { grid-template-columns: 1fr 1fr; }
+      .steps-grid      { grid-template-columns: 1fr; }
+      .steps-grid::before, .steps-grid::after { display: none; }
+      .stats-row       { grid-template-columns: 1fr 1fr; }
+      .footer-top      { grid-template-columns: 1fr 1fr; }
+      .nav-links       { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .hero            { padding: 48px 20px 0; }
+      .hero-copy       { padding-bottom: 32px; }
+      .hero-headline   { font-size: 36px; }
+      .hero-headline .accent { font-size: 28px; }
+      .hero-mockup-wrap img { max-width: 200px; }
+      .features-grid, .testimonials-grid { grid-template-columns: 1fr; }
+      .stats-row       { grid-template-columns: 1fr 1fr; }
+      .section-features, .section-how, .section-testimonials, .section-cta { padding: 56px 20px; }
+      .footer-top      { grid-template-columns: 1fr; }
+      .navbar          { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════ -->
+<nav class="navbar">
+  <a href="{% url 'landing' %}" class="nav-brand">
+    <div class="brand-icon">T</div>
+    <span class="brand-name">TrackPact</span>
+  </a>
+
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#testimonials">Testimonials</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+
+  <div class="nav-right">
+    <a href="{% url 'login' %}" class="btn-signin">Sign In</a>
+    <a href="{% url 'register' %}" class="btn-getstarted">Get Started</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     SECTION 1 — HERO
+══════════════════════════════════════ -->
+<section class="hero-section">
+
+  <!-- Dark gradient overlay -->
+  <div class="hero-overlay"></div>
+
+  <div class="hero">
+
+    <!-- Left: copy -->
+    <div class="hero-copy">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Join the community today
+      </div>
+
+      <h1 class="hero-headline">
+        Stop missing<br>workouts.
+        <span class="accent">Stay accountable.</span>
+      </h1>
+
+      <p class="hero-sub">
+        The only fitness app that pairs you with an accountability
+        partner to keep you consistent. No excuses, just results.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="{% url 'register' %}" class="btn-primary">
+          Start Free Trial &nbsp;→
+        </a>
+        <a href="#how-it-works" class="btn-secondary">
+          <span>▶</span> Watch Demo
+        </a>
+      </div>
+
+      <div class="hero-trust">
+        <span><span class="check">✓</span> No credit card required</span>
+        <span><span class="check">✓</span> 14-day free trial</span>
+      </div>
+    </div>
+
+    <!-- Right: phone mockup floating -->
+    <!-- <div class="hero-mockup-wrap">
+      <img
+        src="{% static 'images/trackpact_mockup.png' %}"
+        alt="TrackPact app preview"
+      >
+    </div> -->
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SECTION 2 — FEATURES
+══════════════════════════════════════ -->
+<section class="section-features" id="features">
+  <div class="section-header">
+    <h2>Built for consistency, not complexity</h2>
+    <p>Simple tools that create powerful accountability. No social feeds, no distractions—just you, your partner, and your goals.</p>
+  </div>
+
+  <div class="features-grid">
+
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <h3>Partner Accountability</h3>
+      <p>Get paired with someone who keeps you honest. They see your progress, you see theirs. No hiding from missed workouts.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📅</div>
+      <h3>Visual Consistency Map</h3>
+      <p>See your workout history at a glance. Green days feel good. Missed days hurt. Simple psychology that works.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🔥</div>
+      <h3>Streak Tracking</h3>
+      <p>Build momentum with daily streaks. Watch the number grow. Feel the pressure to keep it alive. It's addictive in the best way.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🔔</div>
+      <h3>Smart Reminders</h3>
+      <p>Your partner can send you a gentle nudge when you're slipping. Sometimes all you need is someone who cares.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Progress Insights</h3>
+      <p>Track weekly goals, completion rates, and trends. Data that motivates, not overwhelms.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🛡️</div>
+      <h3>Privacy First</h3>
+      <p>Only you and your partner see your data. No public profiles, no social comparison. Just focused accountability.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SECTION 3 — HOW IT WORKS
+══════════════════════════════════════ -->
+<section class="section-how" id="how-it-works">
+  <div class="section-header">
+    <h2>How it works</h2>
+    <p>Three simple steps to never miss a workout again</p>
+  </div>
+
+  <div class="steps-grid">
+
+    <div class="step-card">
+      <div class="step-number">1</div>
+      <h3>Find Your Partner</h3>
+      <p>Invite a friend or get matched with someone who shares your fitness goals and schedule.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">2</div>
+      <h3>Log Your Workouts</h3>
+      <p>Quick logging takes 10 seconds. Your partner sees it instantly. Transparency builds commitment.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">3</div>
+      <h3>Stay Consistent</h3>
+      <p>Watch your streaks grow. Get nudges when needed. Celebrate wins together. Build the habit that sticks.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SECTION 4 — STATS
+══════════════════════════════════════ -->
+<!-- <section class="section-stats">
+  <div class="stats-row">
+    <div>
+      <div class="stat-value">10,000+</div>
+      <div class="stat-label">Active Users</div>
+    </div>
+    <div>
+      <div class="stat-value">85%</div>
+      <div class="stat-label">Consistency Rate</div>
+    </div>
+    <div>
+      <div class="stat-value">5,000+</div>
+      <div class="stat-label">Active Partnerships</div>
+    </div>
+    <div>
+      <div class="stat-value">4.9/5</div>
+      <div class="stat-label">User Rating</div>
+    </div>
+  </div>
+</section> -->
+
+<!-- ══════════════════════════════════════
+     SECTION 5 — TESTIMONIALS
+══════════════════════════════════════ -->
+<section class="section-testimonials" id="testimonials">
+  <div class="section-header">
+    <h2>What our users say</h2>
+    <p>Real stories from people who transformed their fitness consistency</p>
+  </div>
+
+  <div class="testimonials-grid">
+
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-quote">"This is the just the MVP and we are hoping to get reviews from our authentic users so for now enjoy this hardcoded reviews."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">MC</div>
+        <div>
+          <div class="author-name">Michael Chen</div>
+          <div class="author-role">Software Engineer</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-quote">"The simplicity is what makes it work. No complicated features, just pure accountability. My workout consistency went from 40% to 90%."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">ER</div>
+        <div>
+          <div class="author-name">Emma Rodriguez</div>
+          <div class="author-role">Marketing Manager</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-quote">"Having someone who actually cares about my progress changes everything. We push each other every single day."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">JW</div>
+        <div>
+          <div class="author-name">James Wilson</div>
+          <div class="author-role">Graduate Student</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SECTION 6 — CTA BANNER
+══════════════════════════════════════ -->
+<section class="section-cta" id="pricing">
+  <div class="cta-box">
+    <h2>Ready to build consistency?</h2>
+    <p>Join thousands of people who stopped making excuses and started showing up. Your accountability partner is waiting.</p>
+
+    <div class="cta-btns">
+      <a href="{% url 'register' %}" class="btn-cta-white">Start Your Free Trial &nbsp;→</a>
+      <a href="#how-it-works" class="btn-cta-outline">Schedule a Demo</a>
+    </div>
+
+    <div class="cta-fine">No credit card required &bull; 14-day free trial &bull; Cancel anytime</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer>
+  <div class="footer-top">
+
+    <!-- Brand col -->
+    <div class="footer-brand-col">
+      <div class="footer-logo">
+        <div class="footer-icon">T</div>
+        <span class="footer-logo-name">TrackPact</span>
+      </div>
+      <p class="footer-tagline">The accountability app that keeps you consistent with your workouts through partner support and transparency.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn" title="Twitter">𝕏</a>
+        <a href="#" class="social-btn" title="Instagram">◎</a>
+        <a href="#" class="social-btn" title="LinkedIn">in</a>
+      </div>
+    </div>
+
+    <!-- Product col -->
+    <div class="footer-col">
+      <h4>Product</h4>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Roadmap</a></li>
+      </ul>
+    </div>
+
+    <!-- Company col -->
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 TrackPact. All rights reserved.</span>
+    <div class="footer-legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

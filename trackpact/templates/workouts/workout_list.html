@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workout History — TrackPact</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #fdf0e8; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #1a1a1a; font-size: 14px; }
+
+    .navbar { background: #fff; border-bottom: 1px solid #e8d8ce; height: 56px; display: flex; align-items: center; padding: 0 28px; position: sticky; top: 0; z-index: 200; }
+    .navbar-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .brand-icon { width: 32px; height: 32px; background: #6b1a3a; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+    .brand-name { font-weight: 700; font-size: 15px; color: #1a1a1a; }
+    .navbar-nav { display: flex; align-items: center; gap: 4px; margin: 0 auto; }
+    .navbar-nav a { text-decoration: none; color: #666; font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: color .15s, background .15s; }
+    .navbar-nav a:hover { color: #1a1a1a; background: #fdf0e8; }
+    .navbar-nav a.active { color: #1a1a1a; font-weight: 700; }
+    .navbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .notif-btn { background: none; border: none; cursor: pointer; position: relative; color: #666; font-size: 18px; padding: 4px; line-height: 1; }
+    .notif-dot { position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #6b1a3a; border-radius: 50%; border: 2px solid #fff; }
+    .user-menu { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background .15s; text-decoration: none; }
+    .user-menu:hover { background: #fdf0e8; }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: #c08090; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+    .user-name { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+    .chevron { font-size: 11px; color: #888; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; margin-left: 8px; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: #1a1a1a; border-radius: 2px; }
+    .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #fff; border-bottom: 1px solid #e8d8ce; padding: 12px 20px 16px; z-index: 199; flex-direction: column; gap: 4px; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a { text-decoration: none; color: #666; font-size: 15px; font-weight: 500; padding: 10px 14px; border-radius: 10px; transition: background .15s; }
+    .mobile-nav a:hover, .mobile-nav a.active { background: #fdf0e8; color: #6b1a3a; font-weight: 700; }
+    .mobile-nav-divider { height: 1px; background: #f0e0d8; margin: 6px 0; }
+
+    .page { max-width: 900px; margin: 0 auto; padding: 36px 28px 60px; }
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; gap: 12px; }
+    .page-header h1 { font-size: 24px; font-weight: 800; }
+    .page-header p { color: #888; font-size: 13.5px; margin-top: 4px; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 6px; background: #6b1a3a; color: #fff; font-size: 13.5px; font-weight: 600; padding: 10px 18px; border-radius: 10px; text-decoration: none; border: none; cursor: pointer; white-space: nowrap; transition: background .15s; flex-shrink: 0; }
+    .btn-primary:hover { background: #55132e; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: #fff; border-radius: 16px; border: 1px solid #f0e0d8; padding: 20px 22px; }
+    .stat-icon { font-size: 20px; margin-bottom: 10px; }
+    .stat-label { font-size: 12.5px; color: #888; margin-bottom: 8px; }
+    .stat-value { font-size: 30px; font-weight: 800; color: #6b1a3a; line-height: 1; }
+    .stat-value span { font-size: 14px; font-weight: 500; color: #888; margin-left: 4px; }
+
+    .filter-bar { background: #fff; border-radius: 14px; border: 1px solid #f0e0d8; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1; min-width: 160px; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 15px; pointer-events: none; }
+    .search-input { width: 100%; padding: 9px 12px 9px 36px; border: 1.5px solid #e0d0d0; border-radius: 10px; font-size: 13.5px; color: #1a1a1a; background: #fdf5f2; outline: none; transition: border-color .15s; }
+    .search-input:focus { border-color: #6b1a3a; background: #fff; }
+    .search-input::placeholder { color: #bbb; }
+    .filter-select { padding: 9px 32px 9px 12px; border: 1.5px solid #e0d0d0; border-radius: 10px; font-size: 13.5px; color: #1a1a1a; background: #fdf5f2; outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23888' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+    .filter-select:focus { border-color: #6b1a3a; }
+    .btn-filter { padding: 9px 16px; background: #6b1a3a; color: #fff; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: background .15s; white-space: nowrap; }
+    .btn-filter:hover { background: #55132e; }
+    .btn-clear { padding: 9px 14px; background: #fff; color: #888; border: 1.5px solid #e0d0d0; border-radius: 10px; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: background .15s; white-space: nowrap; }
+    .btn-clear:hover { background: #fdf0e8; }
+
+    .results-label { font-size: 13px; color: #888; margin-bottom: 12px; }
+    .results-label strong { color: #1a1a1a; }
+    .workout-list { display: flex; flex-direction: column; gap: 12px; }
+    .workout-item { background: #fff; border-radius: 14px; border: 1px solid #f0e0d8; padding: 18px 20px; display: flex; align-items: center; gap: 16px; transition: box-shadow .15s; }
+    .workout-item:hover { box-shadow: 0 2px 12px rgba(107,26,58,.08); }
+    .cat-dot { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .cat-strength    { background: #fde8ee; }
+    .cat-cardio      { background: #e8f4fd; }
+    .cat-flexibility { background: #e8fde8; }
+    .cat-sports      { background: #fdf5e8; }
+    .cat-other       { background: #f0e8fd; }
+    .workout-info { flex: 1; min-width: 0; }
+    .workout-title { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .workout-meta { display: flex; align-items: center; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+    .meta-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #888; }
+    .cat-badge { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; text-transform: capitalize; white-space: nowrap; }
+    .badge-strength    { background: #fde8ee; color: #6b1a3a; }
+    .badge-cardio      { background: #e8f4fd; color: #1565c0; }
+    .badge-flexibility { background: #e8fde8; color: #2e7d32; }
+    .badge-sports      { background: #fdf5e8; color: #e65100; }
+    .badge-other       { background: #f0e8fd; color: #6a1b9a; }
+    .workout-date { font-size: 13px; color: #888; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+    .delete-btn { background: none; border: none; cursor: pointer; color: #ddd; font-size: 16px; padding: 6px; border-radius: 8px; transition: color .15s, background .15s; flex-shrink: 0; }
+    .delete-btn:hover { color: #c62828; background: #fce4ec; }
+
+    .empty-state { background: #fff; border-radius: 16px; border: 1px solid #f0e0d8; padding: 56px 24px; text-align: center; }
+    .empty-icon { font-size: 40px; margin-bottom: 14px; }
+    .empty-state h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .empty-state p { color: #888; font-size: 13.5px; margin-bottom: 24px; }
+
+    .messages-wrap { max-width: 900px; margin: 12px auto 0; padding: 0 28px; }
+    .alert { padding: 10px 16px; border-radius: 10px; font-size: 13.5px; margin-bottom: 8px; }
+    .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+    .alert-error   { background: #fce4ec; color: #c62828; border: 1px solid #f8bbd0; }
+    .alert-warning { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+
+    @media (max-width: 768px) {
+      .navbar-nav { display: none; }
+      .navbar-right .user-name, .navbar-right .chevron { display: none; }
+      .hamburger { display: flex; }
+      .stats-row { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    }
+    @media (max-width: 480px) {
+      .navbar { padding: 0 16px; }
+      .page { padding: 20px 14px 40px; }
+      .messages-wrap { padding: 0 14px; }
+      .page-header { flex-direction: column; align-items: stretch; gap: 12px; }
+      .page-header h1 { font-size: 20px; }
+      .btn-primary { justify-content: center; }
+      .stats-row { gap: 8px; }
+      .stat-card { padding: 14px; }
+      .stat-value { font-size: 22px; }
+      .stat-icon { font-size: 17px; margin-bottom: 6px; }
+      .filter-bar { flex-direction: column; align-items: stretch; padding: 14px; gap: 10px; }
+      .search-wrap { min-width: unset; }
+      .filter-select { width: 100%; }
+      .workout-item { padding: 14px; gap: 12px; }
+      .cat-dot { width: 36px; height: 36px; font-size: 15px; border-radius: 10px; }
+      .workout-title { font-size: 14px; }
+      .workout-date { display: none; }
+      .empty-state { padding: 40px 16px; }
+    }
+    @media (max-width: 375px) {
+      .stats-row { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .stat-card { padding: 12px 8px; text-align: center; }
+      .stat-value { font-size: 20px; }
+      .stat-label { font-size: 11px; }
+      .workout-item { gap: 10px; padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="{% url 'landing' %}" class="navbar-brand">
+    <div class="brand-icon">T</div>
+    <span class="brand-name">TrackPact</span>
+  </a>
+  <div class="navbar-nav">
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'partner_page' %}">Partner</a>
+    <a href="{% url 'workout_list' %}" class="active">History</a>
+  </div>
+  <div class="navbar-right">
+    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <a href="{% url 'profile' %}" class="user-menu">
+      <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+      <span class="user-name">{{ request.user.first_name|default:request.user.username }}</span>
+      <span class="chevron">▾</span>
+    </a>
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="{% url 'dashboard' %}">Dashboard</a>
+  <a href="{% url 'partner_page' %}">Partner</a>
+  <a href="{% url 'workout_list' %}" class="active">History</a>
+  <div class="mobile-nav-divider"></div>
+  <a href="{% url 'profile' %}">👤 Profile</a>
+  <form method="post" action="{% url 'logout' %}" style="display:contents;">{% csrf_token %}<button type="submit" style="background:none;border:none;cursor:pointer;color:#666;font-size:15px;font-weight:500;padding:10px 14px;border-radius:10px;width:100%;text-align:left;font-family:inherit;transition:background .15s;">← Log Out</button></form>
+</div>
+
+{% if messages %}
+  <div class="messages-wrap">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Workout History</h1>
+      <p>Every session logged, all in one place.</p>
+    </div>
+    <a href="{% url 'add_workout' %}" class="btn-primary">+ Log Workout</a>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-icon">🏋️</div><div class="stat-label">Total Workouts</div><div class="stat-value">{{ total_workouts }}</div></div>
+    <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-label">Total Minutes</div><div class="stat-value">{{ total_minutes }}<span>min</span></div></div>
+    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-label">This Week</div><div class="stat-value">{{ this_week }}</div></div>
+  </div>
+  <form method="get" action="{% url 'workout_list' %}">
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" type="text" name="q" placeholder="Search workouts..." value="{{ query }}">
+      </div>
+      <select class="filter-select" name="category">
+        <option value="">All Categories</option>
+        {% for value, label in categories %}
+          <option value="{{ value }}" {% if category == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn-filter">Filter</button>
+      {% if query or category %}<a href="{% url 'workout_list' %}" class="btn-clear">✕ Clear</a>{% endif %}
+    </div>
+  </form>
+  {% if query or category %}
+    <div class="results-label">Showing <strong>{{ workouts|length }}</strong> result{{ workouts|length|pluralize }}{% if query %} for "<strong>{{ query }}</strong>"{% endif %}{% if category %} in <strong>{{ category|capfirst }}</strong>{% endif %}</div>
+  {% endif %}
+  {% if workouts %}
+    <div class="workout-list">
+      {% for workout in workouts %}
+        <div class="workout-item">
+          <div class="cat-dot cat-{{ workout.category }}">
+            {% if workout.category == 'strength' %}🏋️{% elif workout.category == 'cardio' %}🏃{% elif workout.category == 'flexibility' %}🧘{% elif workout.category == 'sports' %}⚽{% else %}💪{% endif %}
+          </div>
+          <div class="workout-info">
+            <div class="workout-title">{{ workout.title }}</div>
+            <div class="workout-meta">
+              <span class="cat-badge badge-{{ workout.category }}">{{ workout.get_category_display }}</span>
+              <span class="meta-pill">⏱ {{ workout.duration }} min</span>
+              {% if workout.notes %}<span class="meta-pill">📝 Notes</span>{% endif %}
+            </div>
+          </div>
+          <div class="workout-date">{{ workout.date|date:"M d, Y" }}</div>
+          <form method="post" action="{% url 'delete_workout' workout.id %}" onsubmit="return confirm('Delete \'{{ workout.title }}\'?')">
+            {% csrf_token %}
+            <button type="submit" class="delete-btn" title="Delete">🗑</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">{% if query or category %}🔍{% else %}🏋️{% endif %}</div>
+      {% if query or category %}
+        <h2>No workouts found</h2>
+        <p>Try a different search term or category filter.</p>
+        <a href="{% url 'workout_list' %}" class="btn-primary">Clear filters</a>
+      {% else %}
+        <h2>No workouts yet</h2>
+        <p>Start logging your workouts to track your progress.</p>
+        <a href="{% url 'add_workout' %}" class="btn-primary">+ Log Your First Workout</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  const btn = document.getElementById('hamburgerBtn');
+  const nav = document.getElementById('mobileNav');
+  btn.addEventListener('click', () => nav.classList.toggle('open'));
+  document.addEventListener('click', (e) => { if (!btn.contains(e.target) && !nav.contains(e.target)) nav.classList.remove('open'); });
+</script>
+</body>
+</html>

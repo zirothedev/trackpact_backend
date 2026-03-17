@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — TrackPact</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #fdf0e8; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #1a1a1a; font-size: 14px; }
+
+  /* ── NAVBAR ── */
+  .navbar { background: #fff; border-bottom: 1px solid #e8d8ce; height: 56px; display: flex; align-items: center; padding: 0 28px; position: sticky; top: 0; z-index: 200; }
+  .navbar-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .brand-icon { width: 32px; height: 32px; background: #6b1a3a; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .brand-name { font-weight: 700; font-size: 15px; color: #1a1a1a; }
+  .navbar-nav { display: flex; align-items: center; gap: 4px; margin: 0 auto; }
+  .navbar-nav a { text-decoration: none; color: #666; font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: color .15s, background .15s; }
+  .navbar-nav a:hover { color: #1a1a1a; background: #fdf0e8; }
+  .navbar-nav a.active { color: #1a1a1a; font-weight: 700; }
+  .navbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .notif-btn { background: none; border: none; cursor: pointer; position: relative; color: #666; font-size: 18px; padding: 4px; line-height: 1; }
+  .notif-dot { position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #6b1a3a; border-radius: 50%; border: 2px solid #fff; }
+  .user-menu { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background .15s; text-decoration: none; }
+  .user-menu:hover { background: #fdf0e8; }
+  .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: #c08090; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+  .chevron { font-size: 11px; color: #888; }
+
+  /* Hamburger */
+  .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; margin-left: auto; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: #1a1a1a; border-radius: 2px; transition: all .25s; }
+
+  /* Mobile nav drawer */
+  .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #fff; border-bottom: 1px solid #e8d8ce; padding: 12px 20px 16px; z-index: 199; flex-direction: column; gap: 4px; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav a { text-decoration: none; color: #666; font-size: 15px; font-weight: 500; padding: 10px 14px; border-radius: 10px; transition: background .15s, color .15s; }
+  .mobile-nav a:hover, .mobile-nav a.active { background: #fdf0e8; color: #6b1a3a; font-weight: 700; }
+  .mobile-nav-divider { height: 1px; background: #f0e0d8; margin: 6px 0; }
+
+  /* ── PAGE ── */
+  .page { max-width: 1100px; margin: 0 auto; padding: 32px 28px 48px; }
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; gap: 12px; }
+  .page-header h1 { font-size: 26px; font-weight: 800; color: #1a1a1a; line-height: 1.2; }
+  .page-header p { color: #666; font-size: 13.5px; margin-top: 4px; }
+
+  .btn-primary { display: inline-flex; align-items: center; gap: 6px; background: #6b1a3a; color: #fff; font-size: 14px; font-weight: 600; padding: 11px 20px; border-radius: 10px; text-decoration: none; border: none; cursor: pointer; white-space: nowrap; transition: background .15s; flex-shrink: 0; }
+  .btn-primary:hover { background: #55132e; }
+
+  /* ── STAT CARDS ── */
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1.15fr; gap: 16px; margin-bottom: 20px; }
+  .card { background: #fff; border-radius: 16px; padding: 22px 22px 20px; border: 1px solid #f0e0d8; }
+  .card-streak .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+  .card-icon { width: 36px; height: 36px; background: #fdf0e8; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+  .badge-active { background: #fdf0e8; color: #6b1a3a; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; border: 1px solid #e8c8d4; }
+  .card-label { font-size: 13px; color: #888; margin-bottom: 6px; }
+  .card-value { font-size: 36px; font-weight: 800; color: #1a1a1a; line-height: 1; }
+  .card-value span { font-size: 15px; font-weight: 500; color: #888; margin-left: 4px; }
+  .card-week .card-icon { margin-bottom: 16px; }
+  .week-fraction { font-size: 13px; color: #888; margin-left: 6px; }
+  .progress-bar-wrap { background: #f5dde8; border-radius: 4px; height: 6px; margin-top: 14px; overflow: hidden; }
+  .progress-bar-fill { background: #6b1a3a; height: 100%; border-radius: 4px; }
+
+  /* Partner card */
+  .card-partner { padding: 20px; }
+  .partner-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .partner-avatar { width: 40px; height: 40px; border-radius: 50%; background: #c08090; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .partner-info-name { font-size: 14.5px; font-weight: 700; color: #1a1a1a; }
+  .partner-info-role { font-size: 12px; color: #888; }
+  .partner-alert { background: #fdf0e8; border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border: 1px solid #f0e0d8; }
+  .partner-alert-text { font-size: 13px; color: #5a1a2a; font-weight: 500; }
+  .alert-icon { width: 22px; height: 22px; background: #6b1a3a; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .btn-reminder { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 10px; border: 1.5px solid #d0b0c0; border-radius: 10px; background: #fff; color: #6b1a3a; font-size: 13.5px; font-weight: 600; cursor: pointer; text-decoration: none; transition: background .15s; }
+  .btn-reminder:hover { background: #fdf0e8; }
+
+  /* ── BOTTOM ROW ── */
+  .bottom-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-top: 4px; }
+  .card-calendar { padding: 22px; }
+  .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .calendar-header h2 { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+  .cal-nav { display: flex; align-items: center; gap: 10px; }
+  .cal-nav-btn { background: none; border: none; cursor: pointer; color: #888; font-size: 16px; padding: 2px 6px; border-radius: 6px; line-height: 1; transition: color .15s, background .15s; }
+  .cal-nav-btn:hover { color: #1a1a1a; background: #fdf0e8; }
+  .cal-month-label { font-size: 13.5px; font-weight: 600; color: #1a1a1a; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-day-label { text-align: center; font-size: 11px; color: #888; font-weight: 500; padding-bottom: 6px; }
+  .cal-day { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #1a1a1a; background: #fdf5f0; border: 1.5px solid transparent; cursor: default; }
+  .cal-day.completed { background: #6b1a3a; color: #fff; font-weight: 700; }
+  .cal-day.today { border-color: #6b1a3a; background: #fff; font-weight: 700; color: #6b1a3a; }
+  .cal-day.missed { background: #f5dde8; color: #6b1a3a; }
+  .cal-day.empty { background: transparent; border-color: transparent; }
+  .cal-legend { display: flex; align-items: center; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .legend-dot.completed { background: #6b1a3a; }
+  .legend-dot.missed { background: transparent; border: 1.5px solid #888; }
+  .legend-dot.rest { background: #f5dde8; border: 1.5px solid #e8c8d4; }
+
+  /* Activity */
+  .card-activity { padding: 22px; }
+  .card-activity h2 { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 18px; }
+  .activity-list { display: flex; flex-direction: column; }
+  .activity-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f5ece8; }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .activity-icon.check { background: #e8f5e9; color: #388e3c; }
+  .activity-time { font-size: 11.5px; color: #888; margin-bottom: 2px; }
+  .activity-title { font-size: 13.5px; font-weight: 600; color: #1a1a1a; }
+  .activity-sub { font-size: 12px; color: #888; margin-top: 1px; }
+
+  /* Flash messages */
+  .messages-wrap { max-width: 1100px; margin: 12px auto 0; padding: 0 28px; }
+  .alert { padding: 10px 16px; border-radius: 10px; font-size: 13.5px; margin-bottom: 8px; }
+  .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+  .alert-error   { background: #fce4ec; color: #c62828; border: 1px solid #f8bbd0; }
+  .alert-warning { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+  .alert-info    { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+
+  /* ════════════════════════════════
+     RESPONSIVE
+  ════════════════════════════════ */
+
+  /* Tablet — 768px */
+  @media (max-width: 768px) {
+    .navbar-nav { display: none; }
+    .navbar-right .user-name, .navbar-right .chevron { display: none; }
+    .hamburger { display: flex; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .card-partner { grid-column: 1 / -1; }
+    .bottom-row { grid-template-columns: 1fr; }
+    .page { padding: 24px 20px 48px; }
+  }
+
+  /* Standard phones — 480px */
+  @media (max-width: 480px) {
+    .navbar { padding: 0 16px; }
+    .page { padding: 20px 14px 40px; }
+    .messages-wrap { padding: 0 14px; }
+    .page-header { flex-direction: column; align-items: stretch; gap: 14px; }
+    .page-header h1 { font-size: 21px; }
+    .btn-primary { justify-content: center; width: 100%; }
+    .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .card { padding: 16px; }
+    .card-value { font-size: 28px; }
+    .bottom-row { gap: 12px; }
+    .card-calendar { padding: 16px; }
+    .card-activity { padding: 16px; }
+    .cal-grid { gap: 3px; }
+    .cal-day { font-size: 11px; border-radius: 6px; }
+    .cal-day-label { font-size: 10px; }
+    .cal-legend { gap: 10px; }
+  }
+
+  /* Small phones — 375px */
+  @media (max-width: 375px) {
+    .page-header h1 { font-size: 19px; }
+    .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .card { padding: 14px 12px; }
+    .card-value { font-size: 24px; }
+    .cal-day { font-size: 10px; }
+    .partner-header { gap: 8px; }
+    .partner-info-name { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="{% url 'landing' %}" class="navbar-brand">
+    <div class="brand-icon">T</div>
+    <span class="brand-name">TrackPact</span>
+  </a>
+  <div class="navbar-nav">
+    <a href="{% url 'dashboard' %}" class="active">Dashboard</a>
+    <a href="{% url 'partner_page' %}">Partner</a>
+    <a href="{% url 'workout_list' %}">History</a>
+  </div>
+  <div class="navbar-right">
+    <button class="notif-btn" title="Notifications">🔔<span class="notif-dot"></span></button>
+    <a href="{% url 'profile' %}" class="user-menu">
+      <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+      <span class="user-name">{{ request.user.first_name|default:request.user.username }}</span>
+      <span class="chevron">▾</span>
+    </a>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE NAV DRAWER -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="{% url 'dashboard' %}" class="active">Dashboard</a>
+  <a href="{% url 'partner_page' %}">Partner</a>
+  <a href="{% url 'workout_list' %}">History</a>
+  <div class="mobile-nav-divider"></div>
+  <a href="{% url 'profile' %}">👤 Profile</a>
+  <form method="post" action="{% url 'logout' %}" style="display:contents;">{% csrf_token %}<button type="submit" style="background:none;border:none;cursor:pointer;color:#666;font-size:15px;font-weight:500;padding:10px 14px;border-radius:10px;width:100%;text-align:left;font-family:inherit;transition:background .15s;">← Log Out</button></form>
+</div>
+
+{% if messages %}
+  <div class="messages-wrap">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>Good {% now "G" as hour %}{% if hour < 12 %}morning{% elif hour < 17 %}afternoon{% else %}evening{% endif %}, {{ request.user.first_name|default:request.user.username }}.</h1>
+      {% if profile.partner %}
+        <p>Your partner {{ profile.partner.first_name|default:profile.partner.username }} is your accountability buddy. Stay consistent!</p>
+      {% else %}
+        <p>You don't have a partner yet. <a href="{% url 'send_invite' %}" style="color:#6b1a3a;font-weight:600;">Invite someone →</a></p>
+      {% endif %}
+    </div>
+    <a href="{% url 'add_workout' %}" class="btn-primary"><span style="font-size:16px;">+</span> Log Workout</a>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stats-row">
+    <div class="card card-streak">
+      <div class="card-top">
+        <div class="card-icon">🔥</div>
+        {% if worked_out_today %}<span class="badge-active">Active</span>{% endif %}
+      </div>
+      <div class="card-label">Current Streak</div>
+      <div class="card-value">{{ streak }}<span>days</span></div>
+    </div>
+    <div class="card card-week">
+      <div class="card-icon">📈</div>
+      <div class="card-label" style="margin-top:14px;">Workouts This Week</div>
+      <div class="card-value">{{ workouts_this_week }}<span class="week-fraction">/ {{ weekly_target }} target</span></div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:{% if weekly_target > 0 %}{% widthratio workouts_this_week weekly_target 100 %}{% else %}0{% endif %}%;"></div>
+      </div>
+    </div>
+    {% if profile.partner %}
+    <div class="card card-partner">
+      <div class="partner-header">
+        <div class="partner-avatar">{{ profile.partner.first_name|default:profile.partner.username|first|upper }}</div>
+        <div>
+          <div class="partner-info-name">{{ profile.partner.first_name|default:profile.partner.username }}{% if profile.partner.last_name %} {{ profile.partner.last_name }}{% endif %}</div>
+          <div class="partner-info-role">Accountability Partner</div>
+        </div>
+      </div>
+      {% if partner_missed_today %}
+      <div class="partner-alert">
+        <span class="partner-alert-text">Missed yesterday's workout</span>
+        <div class="alert-icon">!</div>
+      </div>
+      {% endif %}
+      <a href="{% url 'send_reminder' %}" class="btn-reminder">✈ Send Reminder</a>
+    </div>
+    {% else %}
+    <div class="card card-partner" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;">
+      <div style="font-size:28px;">🤝</div>
+      <div style="font-weight:600;color:#1a1a1a;">No partner yet</div>
+      <div style="color:#888;font-size:13px;">Add an accountability partner to stay on track</div>
+      <a href="{% url 'send_invite' %}" class="btn-primary" style="font-size:13px;padding:9px 18px;">Invite a Partner</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- BOTTOM ROW -->
+  <div class="bottom-row">
+    <div class="card card-calendar">
+      <div class="calendar-header">
+        <h2>Consistency Map</h2>
+        <div class="cal-nav">
+          <button class="cal-nav-btn" id="prevMonth">‹</button>
+          <span class="cal-month-label" id="calMonthLabel"></span>
+          <button class="cal-nav-btn" id="nextMonth">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calGrid">
+        <div class="cal-day-label">Mon</div>
+        <div class="cal-day-label">Tue</div>
+        <div class="cal-day-label">Wed</div>
+        <div class="cal-day-label">Thu</div>
+        <div class="cal-day-label">Fri</div>
+        <div class="cal-day-label">Sat</div>
+        <div class="cal-day-label">Sun</div>
+      </div>
+      <div class="cal-legend">
+        <div class="legend-item"><div class="legend-dot completed"></div> Completed</div>
+        <div class="legend-item"><div class="legend-dot missed"></div> Missed</div>
+        <div class="legend-item"><div class="legend-dot rest"></div> Rest Day</div>
+      </div>
+    </div>
+    <div class="card card-activity">
+      <h2>Recent Activity</h2>
+      <div class="activity-list">
+        {% for workout in workouts %}
+        <div class="activity-item">
+          <div class="activity-icon check">✓</div>
+          <div>
+            <div class="activity-time">{{ workout.date }} · {{ workout.duration }} mins</div>
+            <div class="activity-title">You logged a workout</div>
+            <div class="activity-sub">{{ workout.title }}</div>
+          </div>
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:24px 0;color:#888;">
+          <div style="font-size:28px;margin-bottom:8px;">🏋️</div>
+          No workouts yet. <a href="{% url 'add_workout' %}" style="color:#6b1a3a;font-weight:600;">Log your first one!</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Hamburger toggle
+  const btn = document.getElementById('hamburgerBtn');
+  const nav = document.getElementById('mobileNav');
+  btn.addEventListener('click', () => nav.classList.toggle('open'));
+  document.addEventListener('click', (e) => {
+    if (!btn.contains(e.target) && !nav.contains(e.target)) nav.classList.remove('open');
+  });
+
+  // Calendar
+  const workoutDates = new Set([{% for d in workout_dates %}"{{ d }}"{% if not forloop.last %},{% endif %}{% endfor %}]);
+  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  let viewYear, viewMonth;
+  function init() { const now = new Date(); viewYear = now.getFullYear(); viewMonth = now.getMonth(); renderCalendar(); }
+  function renderCalendar() {
+    document.getElementById('calMonthLabel').textContent = MONTHS[viewMonth] + ' ' + viewYear;
+    const grid = document.getElementById('calGrid');
+    grid.querySelectorAll('.cal-day').forEach(c => c.remove());
+    const today = new Date(); const todayStr = toDateStr(today);
+    const firstDay = new Date(viewYear, viewMonth, 1);
+    let startOffset = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    for (let i = 0; i < startOffset; i++) { const el = document.createElement('div'); el.className = 'cal-day empty'; grid.appendChild(el); }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = viewYear + '-' + String(viewMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+      const el = document.createElement('div'); el.textContent = d;
+      const cellDate = new Date(viewYear, viewMonth, d);
+      if (dateStr === todayStr) el.className = 'cal-day today';
+      else if (workoutDates.has(dateStr)) el.className = 'cal-day completed';
+      else if (cellDate < today && viewMonth === today.getMonth() && viewYear === today.getFullYear()) el.className = 'cal-day missed';
+      else el.className = 'cal-day';
+      grid.appendChild(el);
+    }
+  }
+  function toDateStr(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  document.getElementById('prevMonth').addEventListener('click', () => { viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; } renderCalendar(); });
+  document.getElementById('nextMonth').addEventListener('click', () => { viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; } renderCalendar(); });
+  init();
+</script>
+</body>
+</html>

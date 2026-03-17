@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner — TrackPact</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #fdf0e8; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #1a1a1a; font-size: 14px; }
+
+    .navbar { background: #fff; border-bottom: 1px solid #e8d8ce; height: 56px; display: flex; align-items: center; padding: 0 28px; position: sticky; top: 0; z-index: 200; }
+    .navbar-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .brand-icon { width: 32px; height: 32px; background: #6b1a3a; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+    .brand-name { font-weight: 700; font-size: 15px; color: #1a1a1a; }
+    .navbar-nav { display: flex; align-items: center; gap: 4px; margin: 0 auto; }
+    .navbar-nav a { text-decoration: none; color: #666; font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: color .15s, background .15s; }
+    .navbar-nav a:hover { color: #1a1a1a; background: #fdf0e8; }
+    .navbar-nav a.active { color: #1a1a1a; font-weight: 700; }
+    .navbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .notif-btn { background: none; border: none; cursor: pointer; position: relative; color: #666; font-size: 18px; padding: 4px; line-height: 1; }
+    .notif-dot { position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #6b1a3a; border-radius: 50%; border: 2px solid #fff; }
+    .user-menu { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background .15s; text-decoration: none; }
+    .user-menu:hover { background: #fdf0e8; }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: #c08090; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+    .user-name { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+    .chevron { font-size: 11px; color: #888; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; margin-left: 8px; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: #1a1a1a; border-radius: 2px; }
+    .mobile-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; background: #fff; border-bottom: 1px solid #e8d8ce; padding: 12px 20px 16px; z-index: 199; flex-direction: column; gap: 4px; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a { text-decoration: none; color: #666; font-size: 15px; font-weight: 500; padding: 10px 14px; border-radius: 10px; transition: background .15s; }
+    .mobile-nav a:hover, .mobile-nav a.active { background: #fdf0e8; color: #6b1a3a; font-weight: 700; }
+    .mobile-nav-divider { height: 1px; background: #f0e0d8; margin: 6px 0; }
+
+    .page { max-width: 900px; margin: 0 auto; padding: 36px 28px 60px; }
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; gap: 12px; }
+    .page-header h1 { font-size: 24px; font-weight: 800; }
+    .page-header p { color: #888; font-size: 13.5px; margin-top: 4px; }
+
+    .btn-primary { display: inline-flex; align-items: center; gap: 6px; background: #6b1a3a; color: #fff; font-size: 13.5px; font-weight: 600; padding: 10px 18px; border-radius: 10px; text-decoration: none; border: none; cursor: pointer; white-space: nowrap; transition: background .15s; flex-shrink: 0; }
+    .btn-primary:hover { background: #55132e; }
+    .btn-outline { display: inline-flex; align-items: center; gap: 6px; background: #fff; color: #6b1a3a; font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 10px; text-decoration: none; border: 1.5px solid #d0b0c0; cursor: pointer; white-space: nowrap; transition: background .15s; }
+    .btn-outline:hover { background: #fdf0e8; }
+    .btn-danger { display: inline-flex; align-items: center; gap: 6px; background: #fff; color: #c0392b; font-size: 12.5px; font-weight: 600; padding: 7px 14px; border-radius: 8px; text-decoration: none; border: 1.5px solid #f5c6c2; cursor: pointer; transition: background .15s; }
+    .btn-danger:hover { background: #fdf0e8; }
+
+    .card { background: #fff; border-radius: 16px; border: 1px solid #f0e0d8; padding: 24px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    .empty-state { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 48px 24px; }
+    .empty-icon { width: 72px; height: 72px; background: #fdf0e8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 18px; }
+    .empty-state h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .empty-state p { color: #888; font-size: 13.5px; max-width: 320px; line-height: 1.6; margin-bottom: 24px; }
+
+    .partner-linked { margin-bottom: 20px; }
+    .partner-linked-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
+    .partner-linked-header h2 { font-size: 15px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .5px; }
+    .partner-profile { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .partner-avatar-lg { width: 56px; height: 56px; border-radius: 50%; background: #c08090; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .partner-meta-name { font-size: 17px; font-weight: 700; }
+    .partner-meta-email { font-size: 12.5px; color: #888; margin-top: 2px; }
+    .partner-meta-badge { display: inline-flex; align-items: center; gap: 5px; background: #e8f5e9; color: #2e7d32; font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-top: 6px; }
+    .partner-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .p-stat { background: #fdf5f2; border-radius: 12px; padding: 14px 16px; text-align: center; }
+    .p-stat-value { font-size: 22px; font-weight: 800; color: #6b1a3a; }
+    .p-stat-label { font-size: 11.5px; color: #888; margin-top: 3px; }
+    .partner-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    .section-title { font-size: 13.5px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+    .request-list { display: flex; flex-direction: column; gap: 10px; }
+    .request-item { display: flex; align-items: center; justify-content: space-between; background: #fdf5f2; border-radius: 12px; padding: 14px 16px; border: 1px solid #f0e0d8; gap: 10px; flex-wrap: wrap; }
+    .request-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .request-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e8c8d4; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #6b1a3a; flex-shrink: 0; }
+    .request-email { font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .request-date { font-size: 12px; color: #888; margin-top: 2px; }
+    .badge-pending { background: #fff8e1; color: #f57f17; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; border: 1px solid #ffe082; white-space: nowrap; }
+    .request-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-accept { background: #6b1a3a; color: #fff; font-size: 12.5px; font-weight: 600; padding: 6px 14px; border-radius: 8px; text-decoration: none; border: none; cursor: pointer; transition: background .15s; white-space: nowrap; }
+    .btn-accept:hover { background: #55132e; }
+    .btn-decline { background: #fff; color: #888; font-size: 12.5px; font-weight: 600; padding: 6px 14px; border-radius: 8px; text-decoration: none; border: 1.5px solid #e0d0d0; cursor: pointer; transition: background .15s; white-space: nowrap; }
+    .btn-decline:hover { background: #fdf0e8; }
+    .empty-list { text-align: center; padding: 28px 16px; color: #aaa; font-size: 13px; }
+
+    .messages-wrap { max-width: 900px; margin: 12px auto 0; padding: 0 28px; }
+    .alert { padding: 10px 16px; border-radius: 10px; font-size: 13.5px; margin-bottom: 8px; }
+    .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+    .alert-error   { background: #fce4ec; color: #c62828; border: 1px solid #f8bbd0; }
+    .alert-warning { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+    .alert-info    { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .navbar-nav { display: none; }
+      .navbar-right .user-name, .navbar-right .chevron { display: none; }
+      .hamburger { display: flex; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .navbar { padding: 0 16px; }
+      .page { padding: 20px 14px 40px; }
+      .messages-wrap { padding: 0 14px; }
+      .page-header { flex-direction: column; align-items: stretch; }
+      .page-header h1 { font-size: 20px; }
+      .btn-primary { justify-content: center; }
+      .card { padding: 16px; }
+      .empty-state { padding: 32px 16px; }
+      .partner-stats { grid-template-columns: repeat(3,1fr); gap: 8px; }
+      .p-stat { padding: 10px 8px; }
+      .p-stat-value { font-size: 18px; }
+      .partner-actions { flex-direction: column; align-items: stretch; }
+      .partner-actions .btn-primary,
+      .partner-actions .btn-outline { justify-content: center; }
+      .request-item { flex-direction: column; align-items: flex-start; }
+      .request-actions { width: 100%; }
+      .btn-accept, .btn-decline { flex: 1; text-align: center; display: inline-flex; justify-content: center; }
+    }
+    @media (max-width: 375px) {
+      .page-header h1 { font-size: 18px; }
+      .partner-avatar-lg { width: 44px; height: 44px; font-size: 16px; }
+      .partner-meta-name { font-size: 15px; }
+      .p-stat-value { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="{% url 'landing' %}" class="navbar-brand">
+    <div class="brand-icon">T</div>
+    <span class="brand-name">TrackPact</span>
+  </a>
+  <div class="navbar-nav">
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'partner_page' %}" class="active">Partner</a>
+    <a href="{% url 'workout_list' %}">History</a>
+  </div>
+  <div class="navbar-right">
+    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <a href="{% url 'profile' %}" class="user-menu">
+      <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+      <span class="user-name">{{ request.user.first_name|default:request.user.username }}</span>
+      <span class="chevron">▾</span>
+    </a>
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="{% url 'dashboard' %}">Dashboard</a>
+  <a href="{% url 'partner_page' %}" class="active">Partner</a>
+  <a href="{% url 'workout_list' %}">History</a>
+  <div class="mobile-nav-divider"></div>
+  <a href="{% url 'profile' %}">👤 Profile</a>
+  <form method="post" action="{% url 'logout' %}" style="display:contents;">{% csrf_token %}<button type="submit" style="background:none;border:none;cursor:pointer;color:#666;font-size:15px;font-weight:500;padding:10px 14px;border-radius:10px;width:100%;text-align:left;font-family:inherit;transition:background .15s;">← Log Out</button></form>
+</div>
+
+{% if messages %}
+  <div class="messages-wrap">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Accountability Partner</h1>
+      <p>Stay consistent together — your partner keeps you honest.</p>
+    </div>
+    {% if not profile.partner %}
+      <a href="{% url 'send_invite' %}" class="btn-primary">+ Invite Partner</a>
+    {% endif %}
+  </div>
+
+  {% if profile.partner %}
+    <div class="card partner-linked">
+      <div class="partner-linked-header">
+        <h2>Your Partner</h2>
+        <span style="font-size:12px;color:#2e7d32;background:#e8f5e9;padding:4px 12px;border-radius:20px;font-weight:600;">● Connected</span>
+      </div>
+      <div class="partner-profile">
+        <div class="partner-avatar-lg">{{ profile.partner.first_name|default:profile.partner.username|first|upper }}</div>
+        <div>
+          <div class="partner-meta-name">{{ profile.partner.first_name|default:profile.partner.username }}{% if profile.partner.last_name %} {{ profile.partner.last_name }}{% endif %}</div>
+          <div class="partner-meta-email">{{ profile.partner.email }}</div>
+          <div class="partner-meta-badge">🤝 Accountability Partner</div>
+        </div>
+      </div>
+      <div class="partner-stats">
+        <div class="p-stat"><div class="p-stat-value">{{ partner_streak }}</div><div class="p-stat-label">Day Streak</div></div>
+        <div class="p-stat"><div class="p-stat-value">{{ partner_total_workouts }}</div><div class="p-stat-label">Total Workouts</div></div>
+        <div class="p-stat"><div class="p-stat-value">{{ partner_this_week }}</div><div class="p-stat-label">This Week</div></div>
+      </div>
+      <div class="partner-actions">
+        <a href="{% url 'send_reminder' %}" class="btn-primary">✈ Send Reminder</a>
+        <a href="{% url 'dashboard' %}" class="btn-outline">← Dashboard</a>
+        <form method="post" action="{% url 'remove_partner' %}" style="margin-left:auto;" onsubmit="return confirm('Remove {{ profile.partner.username }} as your partner?')">
+          {% csrf_token %}
+          <button type="submit" class="btn-danger">✕ Remove Partner</button>
+        </form>
+      </div>
+    </div>
+  {% else %}
+    <div class="card" style="margin-bottom:20px;">
+      <div class="empty-state">
+        <div class="empty-icon">🤝</div>
+        <h2>No partner yet</h2>
+        <p>Invite a friend by email. Once they accept, you'll both be linked and can hold each other accountable.</p>
+        <a href="{% url 'send_invite' %}" class="btn-primary">+ Invite a Partner</a>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="two-col">
+    <div class="card">
+      <div class="section-title">📬 Invites Received</div>
+      <div class="request-list">
+        {% for req in received_requests %}
+          <div class="request-item">
+            <div class="request-left">
+              <div class="request-avatar">{{ req.sender.username|first|upper }}</div>
+              <div>
+                <div class="request-email">{{ req.sender.username }}</div>
+                <div class="request-date">{{ req.sender.email }} · {{ req.created_at|date:"M d, Y" }}</div>
+              </div>
+            </div>
+            <div class="request-actions">
+              <a href="{% url 'accept_request' req.id %}" class="btn-accept">Accept</a>
+              <a href="{% url 'decline_request' req.id %}" class="btn-decline">Decline</a>
+            </div>
+          </div>
+        {% empty %}
+          <div class="empty-list">No pending invites</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">📤 Invites Sent</div>
+      <div class="request-list">
+        {% for req in sent_requests %}
+          <div class="request-item">
+            <div class="request-left">
+              <div class="request-avatar">✉</div>
+              <div>
+                <div class="request-email">{{ req.receiver_email }}</div>
+                <div class="request-date">Sent {{ req.created_at|date:"M d, Y" }}</div>
+              </div>
+            </div>
+            {% if req.status == 'accepted' %}<span style="background:#e8f5e9;color:#2e7d32;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid #c8e6c9;white-space:nowrap;">Accepted</span>
+            {% elif req.status == 'declined' %}<span style="background:#fce4ec;color:#c62828;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid #f8bbd0;white-space:nowrap;">Declined</span>
+            {% else %}<span class="badge-pending">Pending</span>{% endif %}
+          </div>
+        {% empty %}
+          <div class="empty-list">No invites sent yet</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const btn = document.getElementById('hamburgerBtn');
+  const nav = document.getElementById('mobileNav');
+  btn.addEventListener('click', () => nav.classList.toggle('open'));
+  document.addEventListener('click', (e) => { if (!btn.contains(e.target) && !nav.contains(e.target)) nav.classList.remove('open'); });
+</script>
+</body>
+</html>
