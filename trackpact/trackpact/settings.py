@@ -18,7 +18,10 @@ SECRET_KEY = 'trackpact-dev-secret-key-change-in-production'
 # SECURITY WARNING: don't run with debug=True in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['trackpact.onrender.com']
+CSRF_TRUSTED_ORIGINS = [
+"https://trackpact.onrender.com",
+]
 
 # All apps in the project
 INSTALLED_APPS = [
